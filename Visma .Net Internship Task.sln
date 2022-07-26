@@ -5,6 +5,8 @@ VisualStudioVersion = 17.2.32516.85
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console Viama MeetingApp", "Console Viama MeetingApp\Console Viama MeetingApp.csproj", "{730F233D-339C-4824-BD0E-649409AEADC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Program.UnitTests", "Program.UnitTests\Program.UnitTests.csproj", "{835CECEA-1EFC-4943-86E0-1DB281DC4E48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{730F233D-339C-4824-BD0E-649409AEADC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{730F233D-339C-4824-BD0E-649409AEADC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{730F233D-339C-4824-BD0E-649409AEADC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{835CECEA-1EFC-4943-86E0-1DB281DC4E48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{835CECEA-1EFC-4943-86E0-1DB281DC4E48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{835CECEA-1EFC-4943-86E0-1DB281DC4E48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{835CECEA-1EFC-4943-86E0-1DB281DC4E48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

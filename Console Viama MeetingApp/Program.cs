@@ -27,48 +27,56 @@ namespace Visma_meeting_application
             while (isWork)
             {
                 Console.WriteLine(allCommands);
-                string inputCommandStr = Console.ReadLine();
-                
-                int inputCommand = GetIntFromString(inputCommandStr);
-
-                switch (inputCommand)
+               
+                switch (ValidateInt())
                 {
                     case 0:
                         {
                             Console.WriteLine("Enter meeting name");
-                            string name = Console.ReadLine();
+                            string name = ValidateName();
+
                             Console.WriteLine("Enter responsable person name");
-                            string responsiblePerson = Console.ReadLine();
+                            string responsiblePerson = ValidateName();
+
                             Console.WriteLine("Enter description");
                             string description = Console.ReadLine();
+
                             Console.WriteLine("Choose category: \n1 - CodeMonkey \n2 - Hub \n3 - Short \n4 - TeamBuilding");
-                            string inputCategory = Console.ReadLine();
-                            int categoryNumber = GetIntFromString(inputCategory);
+                            int categoryNumber = ValidateIntRange(1,4);
                             string[] categories = { "CodeMonkey", "Hub", "Short", "TeamBuilding" };
                             string category = categories[categoryNumber - 1];
+
                             Console.WriteLine("Choose type: \n1 - Live \n2 - InPerson");
-                            string inputType = Console.ReadLine();
-                            int typeNumber = GetIntFromString(inputType);
+                            int typeNumber = ValidateIntRange(1,2);
                             string[] types = { "Live", "InPerson" };
                             string type = types[typeNumber - 1];
-                            Console.WriteLine("Enter start date and time (e.g. 2022-07-22 10:00)");
-                            DateTime startDateTime = DateTime.Parse(Console.ReadLine());
-                            Console.WriteLine("Enter end date and time (e.g. 2022-07-22 10:00)");
-                            DateTime endDateTime = DateTime.Parse(Console.ReadLine());
 
+                            DateTime startDateTime = DateTime.Now;
+                            DateTime endDateTime = DateTime.Now;
+
+                            bool checkDate = true;
+                            while (checkDate)
+                            {
+                                Console.WriteLine("Enter start date and time");
+                                startDateTime = DateTimeValidation();
+                                Console.WriteLine("Enter end date and time");
+                                endDateTime = DateTimeValidation();
+                                if (startDateTime > endDateTime) Console.WriteLine("\nStart date can't be later than end date!");
+                                else if( startDateTime == endDateTime) Console.WriteLine("\nStart date can't be the same as end date!");
+                                else checkDate = false;
+                            }
                             List<MeetingClass.ParticipantClass> participant = new List<MeetingClass.ParticipantClass>();
                             MeetingClass newMeeting = new MeetingClass(0, name, responsiblePerson, description, category, type, startDateTime, endDateTime, participant);
                             newMeeting.Participant.Add(new MeetingClass.ParticipantClass(responsiblePerson, DateTime.Now));
                             SaveToFile(newMeeting);
-
+                            Succsess();
                             break;
                         }
                     case 1:
                         {
-
                             Console.WriteLine("Enter meeting ID:");
-                            string idStr = Console.ReadLine();
-                            int id = GetIntFromString(idStr);
+                            
+                            int id = ValidateInt();
                             List<MeetingClass> allCurrentMeetings = ReadAllFromFile();
 
                             if (allCurrentMeetings.Exists(x => x.Id == id))
@@ -76,11 +84,10 @@ namespace Visma_meeting_application
                                 string responsiblePerson = allCurrentMeetings[id - 1].ResponsiblePerson.ToString();
                                 Console.WriteLine("Input your name:");
                                 string name = Console.ReadLine();
-                                if (name == responsiblePerson)
+                                if (name.ToLower() == responsiblePerson.ToLower())
                                 {
                                     DeleteFromFile(id);
-                                    Console.WriteLine("Succsess!");
-                                    Console.WriteLine("-------------------");
+                                    Succsess();
                                 }
                                 else Console.WriteLine("Only responsible person can delete!");
                             }
@@ -90,21 +97,21 @@ namespace Visma_meeting_application
                     case 2:
                         {
                             Console.WriteLine("Enter meeting ID:");
-                            string idStr = Console.ReadLine();
+                            int id = ValidateInt();
                             bool addingParticipant = true;
                             while (addingParticipant)
                             {
                                 Console.WriteLine("\n0 - Add new participant \n1 - Remove participant \n2 - Exit");
-                                inputCommand = GetIntFromString(Console.ReadLine());
-                                switch (inputCommand)
+                                
+                                switch (ValidateInt())
                                 {
                                     case 0:
                                         {
                                             Console.WriteLine("Enter participant name:");
                                             string participantName = Console.ReadLine();
-                                            int id = GetIntFromString(idStr);
+                                            
                                             List<MeetingClass> allCurrentMeetings = ReadAllFromFile();
-                                            if (allCurrentMeetings[id - 1].Participant.Exists(x => x.Name == participantName))
+                                            if (allCurrentMeetings[id - 1].Participant.Exists(x => x.Name.ToLower() == participantName.ToLower()))
                                             {
                                                 Console.WriteLine("Person already at the meeting!");
                                             }
@@ -112,8 +119,7 @@ namespace Visma_meeting_application
                                             {
                                                 allCurrentMeetings[id - 1].Participant.Add(new MeetingClass.ParticipantClass(participantName, DateTime.Now));
                                                 SaveToFile(allCurrentMeetings);
-                                                Console.WriteLine("Succsess!");
-                                                Console.WriteLine("-------------------");
+                                                Succsess();
                                             }
                                             break;
                                         }
@@ -121,18 +127,17 @@ namespace Visma_meeting_application
                                         {
                                             Console.WriteLine("Enter participant name:");
                                             string participantName = Console.ReadLine();
-                                            int id = GetIntFromString(idStr);
+                                            
                                             List<MeetingClass> allCurrentMeetings = ReadAllFromFile();
 
-                                            if (allCurrentMeetings[id - 1].Participant.Exists(x => x.Name == participantName))
+                                            if (allCurrentMeetings[id - 1].Participant.Exists(x => x.Name.ToLower() == participantName.ToLower()))
                                             {
                                                 var itemToDelete = allCurrentMeetings[id - 1].Participant.Single(r => r.Name == participantName);
-                                                if (itemToDelete != null && participantName != allCurrentMeetings[id - 1].ResponsiblePerson)
+                                                if (itemToDelete != null && participantName.ToLower() != allCurrentMeetings[id - 1].ResponsiblePerson.ToLower())
                                                 {
                                                     allCurrentMeetings[id - 1].Participant.Remove(itemToDelete);
                                                     SaveToFile(allCurrentMeetings);
-                                                    Console.WriteLine("Succsess!");
-                                                    Console.WriteLine("-------------------");
+                                                    Succsess();
                                                 }
                                                 else Console.WriteLine("Reponsible person can't be removed!");
                                             }
@@ -168,16 +173,17 @@ namespace Visma_meeting_application
                             {
                                 Console.WriteLine("\n0 - Filter by description \n1 - Filter by responsalbe person \n2 - Filter by category" +
                                 "\n3 - Filter by type\n4 - Filter by dates\n5 - Filter by number of attendees\n6 - Exit");
-                                inputCommand = GetIntFromString(Console.ReadLine());
-                                switch (inputCommand)
+                                
+                                switch (ValidateInt())
                                 {
                                     case 0:
                                         {
                                             Console.WriteLine("Filter by description\n Srearch for...");
                                             string searchName = Console.ReadLine();
                                             List<MeetingClass> allCurrentMeetings = ReadAllFromFile();
-                                            var meetingsFilltered = allCurrentMeetings.FindAll(r => r.Description.Equals(searchName));
-                                            foreach (var meeting in meetingsFilltered) Console.WriteLine(meeting);
+                                            var meetingsFiltered = allCurrentMeetings.FindAll(r => r.Description.ToLower().Contains(searchName.ToLower()));
+                                            if (meetingsFiltered.Count == 0) Console.WriteLine("\n0 meeting found");
+                                            else foreach (var meeting in meetingsFiltered) Console.WriteLine(meeting);
                                             break;
                                         }
                                     case 1:
@@ -185,48 +191,56 @@ namespace Visma_meeting_application
                                             Console.WriteLine("Filter by responsible person\n Srearch for...");
                                             string searchName = Console.ReadLine();
                                             List<MeetingClass> allCurrentMeetings = ReadAllFromFile();
-                                            var meetingsFiltered = allCurrentMeetings.FindAll(r => r.ResponsiblePerson == searchName);
-                                            foreach (var meeting in meetingsFiltered) Console.WriteLine(meeting);
+                                            var meetingsFiltered = allCurrentMeetings.FindAll(r => r.ResponsiblePerson.ToLower() == searchName.ToLower());
+                                            if (meetingsFiltered.Count == 0) Console.WriteLine("\n0 meeting found");
+                                            else foreach (var meeting in meetingsFiltered) Console.WriteLine(meeting);
                                             break;
                                         }
                                     case 2:
                                         {
-                                            Console.WriteLine("Filter by category\n Srearch for...");
-                                            string searchName = Console.ReadLine();
+                                            Console.WriteLine("Filter by category\nSelect:\n1 - CodeMonkey \n2 - Hub \n3 - Short \n4 - TeamBuilding");
+                                            int result = ValidateInt();
+                                            string[] categories = { "CodeMonkey", "Hub", "Short", "TeamBuilding" };
+                                            string category = categories[result - 1];
                                             List<MeetingClass> allCurrentMeetings = ReadAllFromFile();
-                                            var meetingsFiltered = allCurrentMeetings.FindAll(r => r.Category == searchName);
-                                            foreach (var meeting in meetingsFiltered) Console.WriteLine(meeting);
+                                            var meetingsFiltered = allCurrentMeetings.FindAll(r => r.Category == category);
+                                            if (meetingsFiltered.Count == 0) Console.WriteLine("\n0 meeting found");
+                                            else foreach (var meeting in meetingsFiltered) Console.WriteLine(meeting);
                                             break;
                                         }
                                     case 3:
                                         {
-                                            Console.WriteLine("Filter by type\n Srearch for...");
-                                            string searchName = Console.ReadLine();
+                                            Console.WriteLine("Filter by type\nSelect:\n1 - Live \n2 - InPerson");
+                                            int result = ValidateInt();
+                                            string[] types = { "Live", "InPerson" };
+                                            string type = types[result - 1];
                                             List<MeetingClass> allCurrentMeetings = ReadAllFromFile();
-                                            var meetingsFiltered = allCurrentMeetings.FindAll(r => r.Type == searchName);
-                                            foreach (var meeting in meetingsFiltered) Console.WriteLine(meeting);
+                                            var meetingsFiltered = allCurrentMeetings.FindAll(r => r.Type == type);
+                                            if (meetingsFiltered.Count == 0) Console.WriteLine("\n0 meeting found");
+                                            else foreach (var meeting in meetingsFiltered) Console.WriteLine(meeting);
                                             break;
                                         }
                                     case 4:
                                         {
                                             Console.WriteLine("Filter by date\n Srearch from...(eg. 2022-01-01)");
-                                            DateTime searchName = DateTime.Parse(Console.ReadLine());
+                                            DateTime searchFromDate = DateValidation();
                                             Console.WriteLine("Srearch to...(eg.2022-02-01)");
-                                            DateTime searchName2 = DateTime.Parse(Console.ReadLine());
+                                            DateTime searchToDate = DateValidation();
 
                                             List<MeetingClass> allCurrentMeetings = ReadAllFromFile();
-                                            var meetingsFiltered = allCurrentMeetings.FindAll(r => r.StartDate >= searchName && r.EndDate <= searchName2);
-                                            foreach (var meeting in meetingsFiltered) Console.WriteLine(meeting);
+                                            var meetingsFiltered = allCurrentMeetings.FindAll(r => r.StartDate >= searchFromDate && r.EndDate <= searchToDate);
+                                            if (meetingsFiltered.Count == 0) Console.WriteLine("\n0 meeting found");
+                                            else foreach (var meeting in meetingsFiltered) Console.WriteLine(meeting);
                                             break;
                                         }
                                     case 5:
                                         {
-                                            Console.WriteLine("Filter by number of attendees\n Srearch for...");
-                                            int searchName = int.Parse(Console.ReadLine());
+                                            Console.WriteLine("Filter by number of attendees\n Srearch for meetings that have over ... people attending");
+                                            int result = ValidateInt();
                                             List<MeetingClass> allCurrentMeetings = ReadAllFromFile();
-                                            var meetingsFiltered = allCurrentMeetings.FindAll(r => r.Participant.Count == searchName);
-                                            foreach (var meeting in meetingsFiltered) Console.WriteLine(meeting);
-                                            break;
+                                            var meetingsFiltered = allCurrentMeetings.FindAll(r => r.Participant.Count >= result);
+                                            if (meetingsFiltered.Count == 0) Console.WriteLine("\n0 meeting found");
+                                            else foreach (var meeting in meetingsFiltered) Console.WriteLine(meeting);
                                             break;
                                         }
                                     case 6:
@@ -260,20 +274,96 @@ namespace Visma_meeting_application
             }
         }
 
-        static int GetIntFromString(string inputStr)
+        static void Succsess()
         {
-            int input = 0;
-            try
+            Console.WriteLine("\nSuccsess!\n------------------");
+        }
+        static int ValidateInt()
+        {
+            
+            int result = 0;
+            bool testing = true;
+            while (testing)
             {
-                input = int.Parse(inputStr);
+                string input = Console.ReadLine();
+                if (int.TryParse(input, out result)) testing = false;
+                else Console.WriteLine("Not a number");
             }
-            catch (FormatException)
+            return result;
+        }
+        static string ValidateName()
+        {
+            string input= "";
+            bool testing = true;
+            while (testing)
             {
-                Console.WriteLine("Wrong command");
+                input = Console.ReadLine();
+                if (input.Length < 2) Console.WriteLine("Name is too short");
+                else if (input.Length > 50) Console.WriteLine("Name is too long");
+                else testing = false;
+
             }
             return input;
         }
-        
+        static int ValidateIntRange(int from, int to)
+        {
+            int result = 0;
+            bool testing = true;
+            while (testing)
+            {
+
+                result = ValidateInt();
+                if (result >= from && result <= to )
+                {
+                    testing = false;
+                }
+                else Console.WriteLine("Number out of range!");
+
+            }
+            return result;
+        }
+        static DateTime DateTimeValidation()
+        {
+            DateTime result = DateTime.Now;
+            bool testing = true;
+            while (testing)
+            {
+                Console.WriteLine("Enter date: (e.g. 2022-07-26)");
+                string inputDate = Console.ReadLine();
+                Console.WriteLine("Enter time: (e.g. 10:00)");
+                string inputTime = Console.ReadLine();
+
+                
+                if (DateTime.TryParse(inputDate +" "+ inputTime, out result)) 
+                {
+                    testing = false;
+                }
+                else Console.WriteLine("Input is incorrect!");
+
+            }
+            return result;
+        }
+        static DateTime DateValidation()
+        {
+            DateTime result = DateTime.Now;
+            bool testing = true;
+            while (testing)
+            {
+                Console.WriteLine("Enter date: (e.g. 2022-07-26)");
+                string inputDate = Console.ReadLine();
+                
+
+
+                if (DateTime.TryParse(inputDate, out result))
+                {
+                    testing = false;
+                }
+                else Console.WriteLine("Input is incorrect!");
+
+            }
+            return result;
+        }
+
         static void SaveToFile(MeetingClass meeting)
         {
             List<MeetingClass> allCurrentMeetings = ReadAllFromFile();
