@@ -1,7 +1,6 @@
 ﻿
 using Newtonsoft.Json;
 
-
 namespace Visma_meeting_application
 {
     internal class Program
