@@ -81,7 +81,7 @@ namespace Visma_meeting_application
 
                             if (allCurrentMeetings.Exists(x => x.Id == id))
                             {
-                                string responsiblePerson = allCurrentMeetings[id - 1].ResponsiblePerson.ToString();
+                                string responsiblePerson = allCurrentMeetings.FirstOrDefault(me => me.Id == id).ResponsiblePerson.ToString();
                                 Console.WriteLine("Input your name:");
                                 string name = Console.ReadLine();
                                 if (name.ToLower() == responsiblePerson.ToLower())
@@ -111,13 +111,13 @@ namespace Visma_meeting_application
                                             string participantName = Console.ReadLine();
                                             
                                             List<MeetingClass> allCurrentMeetings = ReadAllFromFile();
-                                            if (allCurrentMeetings[id - 1].Participant.Exists(x => x.Name.ToLower() == participantName.ToLower()))
+                                            if (allCurrentMeetings.FirstOrDefault(me => me.Id == id).Participant.Exists(x => x.Name.ToLower() == participantName.ToLower()))
                                             {
                                                 Console.WriteLine("Person already at the meeting!");
                                             }
                                             else
                                             {
-                                                allCurrentMeetings[id - 1].Participant.Add(new MeetingClass.ParticipantClass(participantName, DateTime.Now));
+                                                allCurrentMeetings.FirstOrDefault(me => me.Id == id).Participant.Add(new MeetingClass.ParticipantClass(participantName, DateTime.Now));
                                                 SaveToFile(allCurrentMeetings);
                                                 Succsess();
                                             }
@@ -130,12 +130,12 @@ namespace Visma_meeting_application
                                             
                                             List<MeetingClass> allCurrentMeetings = ReadAllFromFile();
 
-                                            if (allCurrentMeetings[id - 1].Participant.Exists(x => x.Name.ToLower() == participantName.ToLower()))
+                                            if (allCurrentMeetings.FirstOrDefault(me => me.Id == id).Participant.Exists(x => x.Name.ToLower() == participantName.ToLower()))
                                             {
-                                                var itemToDelete = allCurrentMeetings[id - 1].Participant.Single(r => r.Name == participantName);
+                                                var itemToDelete = allCurrentMeetings.FirstOrDefault(me => me.Id == id).Participant.Single(r => r.Name == participantName);
                                                 if (itemToDelete != null && participantName.ToLower() != allCurrentMeetings[id - 1].ResponsiblePerson.ToLower())
                                                 {
-                                                    allCurrentMeetings[id - 1].Participant.Remove(itemToDelete);
+                                                    allCurrentMeetings.FirstOrDefault(me => me.Id == id).Participant.Remove(itemToDelete);
                                                     SaveToFile(allCurrentMeetings);
                                                     Succsess();
                                                 }
